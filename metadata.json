@@ -1,0 +1,6 @@
+{
+  "name": "WPAI X Tech Bot",
+  "description": "Local automation dashboard: crawls X (Twitter) on a jittered schedule for AI/developer posts and uses a LOCAL Ollama model to draft thoughtful replies. Every reply is a draft that only posts to X after explicit human approval — it never auto-posts.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}

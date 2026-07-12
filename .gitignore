@@ -1,0 +1,18 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+
+# Secrets — never commit credential screenshots or key material.
+# (This app uses remote avatar URLs, not local image assets, so ignoring images is safe.)
+Screenshot*
+*.png
+*.jpg
+*.jpeg
+*.webp
+secrets*
+
