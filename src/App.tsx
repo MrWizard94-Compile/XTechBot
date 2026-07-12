@@ -68,13 +68,16 @@ export default function App() {
 
   // Fetch all data from backend
   useEffect(() => {
-    const fetchData = async () => {
+    // isPoll = true on the 10s interval. On a poll we refresh live status/queue/logs but do
+    // NOT overwrite the settings form — otherwise it clobbers your unsaved edits (e.g. flipping
+    // Live mode or typing keys). Settings load on mount and after an explicit Save (triggerFetch).
+    const fetchData = async (isPoll = false) => {
       try {
         const statusRes = await fetch("/api/status");
         if (statusRes.ok) {
           const data = await statusRes.json();
           setStatus(data.status);
-          setSettings(data.settings);
+          if (!isPoll) setSettings(data.settings);
         }
 
         const queueRes = await fetch("/api/queue");
@@ -94,10 +97,10 @@ export default function App() {
       }
     };
 
-    fetchData();
-    
-    // Poll every 10 seconds for updates
-    const pollInterval = setInterval(fetchData, 10000);
+    fetchData(false);
+
+    // Poll every 10 seconds for live status/queue/logs (not the settings form).
+    const pollInterval = setInterval(() => fetchData(true), 10000);
     return () => clearInterval(pollInterval);
   }, [triggerFetch]);
 
