@@ -193,8 +193,17 @@ async function executeCrawlAndReply(manual = false) {
           });
         }
       } catch (xErr: any) {
-        addLog(`[Live Mode] X API query failed: ${xErr.message}. Falling back to sandbox simulation.`);
-        posts = generateSimulatedPosts(settings.keywords);
+        const msg = String(xErr?.message || xErr);
+        const tierGated = /\b402\b|\b403\b/.test(msg) || /payment required|access level|not entitled|client-not-enrolled/i.test(msg);
+        if (tierGated) {
+          // X returns 402/403 when the endpoint isn't in your API plan. Recent search is not
+          // in the Free tier — it needs Basic. Don't draft against fake posts while in Live mode.
+          addLog(`[Live Mode] X search is not in your API plan (HTTP 402/403). X's "recent search" requires the paid Basic tier — the Free tier can't read/search other users' posts. No posts fetched. Use Sandbox mode to practice drafting, or upgrade the X app to Basic to enable real search.`);
+          posts = [];
+        } else {
+          addLog(`[Live Mode] X API query failed: ${msg}. Falling back to Sandbox simulation.`);
+          posts = generateSimulatedPosts(settings.keywords);
+        }
       }
     } else {
       posts = generateSimulatedPosts(settings.keywords);
